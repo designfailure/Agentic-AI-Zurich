@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components Guide - MCP Scheme Ontology</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <style>
+        .doc-page {
+            max-width: 900px;
+            margin: 100px auto 50px;
+            padding: 0 2rem;
+        }
+        .doc-content h1 {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .doc-content h2 {
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        .doc-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .doc-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        .doc-content pre {
+            margin: 1.5rem 0;
+            background: var(--bg-dark);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+        }
+        .doc-content code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+        }
+        .doc-content ul, .doc-content ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-light);
+        }
+        .doc-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        .doc-nav {
+            margin-bottom: 2rem;
+        }
+        .doc-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .doc-nav a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            padding: 1rem;
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+        }
+        .warning {
+            padding: 1rem;
+            background: #fef3c7;
+            border-left: 4px solid var(--warning-color);
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo">MCP</span>
+                    <span class="brand-text">Scheme Ontology</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html#home" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#documentation" class="nav-link active">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-page">
+        <div class="doc-nav">
+            <a href="../index.html">← Back to Home</a>
+        </div>
+
+        <div class="doc-content">
+            <h1>Creating MCP Components</h1>
+
+            <p>
+                Components are the core building blocks of the MCP architecture. Each component is a self-describing
+                module that provides API structures, dataset inference capabilities, and tool calling mechanisms.
+            </p>
+
+            <h2>🏗️ Component Structure</h2>
+
+            <p>
+                Every MCP component follows a standard structure defined by the JSON Schema:
+            </p>
+
+            <pre><code class="language-json">{
+  "$schema": "../schemas/mcp-component-schema.json",
+  "id": "unique-component-id",
+  "type": "source-module",
+  "name": "Human Readable Name",
+  "description": "What this component does",
+  "apiStructure": { /* API definition */ },
+  "datasetInference": { /* Dataset selection rules */ },
+  "toolCalling": { /* Tool invocation specs */ },
+  "semanticContext": { /* Semantic metadata */ },
+  "capabilities": [ /* Capability list */ ],
+  "metadata": { /* Version info, author, etc */ }
+}</code></pre>
+
+            <h2>📋 Required Fields</h2>
+
+            <h3>1. Basic Information</h3>
+            <ul>
+                <li><code>id</code>: Unique identifier (lowercase, hyphen-separated)</li>
+                <li><code>type</code>: Component type (source-module, tool, dataset, composite)</li>
+                <li><code>name</code>: Human-readable name</li>
+                <li><code>apiStructure</code>: API interface definition</li>
+                <li><code>semanticContext</code>: Semantic metadata for inference</li>
+            </ul>
+
+            <h3>2. API Structure</h3>
+            <p>
+                Define how your component can be accessed:
+            </p>
+
+            <pre><code class="language-json">{
+  "apiStructure": {
+    "protocol": "rest",
+    "baseUrl": "http://localhost:8080/api",
+    "endpoints": [
+      {
+        "name": "processData",
+        "method": "POST",
+        "path": "/process",
+        "parameters": [
+          {
+            "name": "input",
+            "type": "string",
+            "required": true,
+            "description": "Input data to process",
+            "semanticRole": "input"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "semanticType": "processed-result"
+        },
+        "semanticTags": ["process", "transform"]
+      }
+    ],
+    "authentication": {
+      "type": "apiKey",
+      "configuration": {
+        "headerName": "X-API-Key"
+      }
+    }
+  }
+}</code></pre>
+
+            <h3>3. Semantic Context (Critical!)</h3>
+            <p>
+                This is the most important part for semantic inference:
+            </p>
+
+            <pre><code class="language-json">{
+  "semanticContext": {
+    "domain": "data-processing",
+    "intents": [
+      "process-data",
+      "transform-data",
+      "convert-data"
+    ],
+    "keywords": [
+      "process",
+      "transform",
+      "convert",
+      "data",
+      "format"
+    ],
+    "concepts": [
+      "data-transformation",
+      "format-conversion"
+    ]
+  }
+}</code></pre>
+
+            <div class="note">
+                <strong>💡 Best Practice:</strong> Include as many intents and keywords as possible.
+                Think about different ways users might express their needs. Include synonyms and
+                variations.
+            </div>
+
+            <h2>🎯 Dataset Inference</h2>
+
+            <p>
+                Define datasets and rules for automatic dataset selection:
+            </p>
+
+            <pre><code class="language-json">{
+  "datasetInference": {
+    "inferenceType": "hybrid",
+    "datasets": [
+      {
+        "id": "primary-dataset",
+        "name": "Primary Data Store",
+        "type": "structured",
+        "schema": {
+          "tables": ["users", "products"]
+        },
+        "semanticTags": ["user-data", "product-data"],
+        "contentDomain": "e-commerce"
+      }
+    ],
+    "inferenceRules": [
+      {
+        "id": "user-query-rule",
+        "name": "Route User Queries",
+        "condition": {
+          "type": "keyword-match",
+          "parameters": {
+            "keywords": ["user", "customer", "account"]
+          }
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "primary-dataset"
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.7
+      }
+    ]
+  }
+}</code></pre>
+
+            <h2>🔧 Tool Calling</h2>
+
+            <p>
+                Define tools and how they should be invoked:
+            </p>
+
+            <pre><code class="language-json">{
+  "toolCalling": {
+    "invocationStrategy": "pipeline",
+    "tools": [
+      {
+        "id": "validator",
+        "name": "Data Validator",
+        "description": "Validates input data",
+        "function": "validateData",
+        "parameters": [
+          {
+            "name": "data",
+            "type": "object",
+            "required": true
+          }
+        ],
+        "semanticPurpose": "data-validation"
+      },
+      {
+        "id": "processor",
+        "name": "Data Processor",
+        "description": "Processes validated data",
+        "function": "processData",
+        "semanticPurpose": "data-processing"
+      }
+    ],
+    "toolSelectionRules": [
+      {
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["validate"]
+          }
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "validator"
+        }
+      }
+    ]
+  }
+}</code></pre>
+
+            <h2>✨ Complete Example</h2>
+
+            <p>
+                Here's a complete component definition:
+            </p>
+
+            <pre><code class="language-json">{
+  "$schema": "../schemas/mcp-component-schema.json",
+  "id": "weather-api-component",
+  "type": "source-module",
+  "name": "Weather API Component",
+  "description": "Provides weather data and forecasts",
+  "apiStructure": {
+    "protocol": "rest",
+    "baseUrl": "http://localhost:8080/api/weather",
+    "endpoints": [
+      {
+        "name": "getCurrentWeather",
+        "method": "GET",
+        "path": "/current",
+        "parameters": [
+          {
+            "name": "location",
+            "type": "string",
+            "required": true,
+            "semanticRole": "location"
+          }
+        ],
+        "semanticTags": ["weather", "current", "real-time"]
+      }
+    ]
+  },
+  "semanticContext": {
+    "domain": "weather",
+    "intents": [
+      "get-weather",
+      "check-weather",
+      "weather-forecast"
+    ],
+    "keywords": [
+      "weather",
+      "temperature",
+      "forecast",
+      "climate",
+      "conditions"
+    ],
+    "concepts": [
+      "meteorology",
+      "weather-data"
+    ]
+  },
+  "capabilities": [
+    {
+      "name": "Current Weather",
+      "type": "query",
+      "description": "Get current weather conditions"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Weather Team",
+    "created": "2025-01-15T00:00:00Z"
+  }
+}</code></pre>
+
+            <h2>✅ Validation</h2>
+
+            <p>
+                Always validate your component against the schema:
+            </p>
+
+            <pre><code class="language-bash">npm run validate-schema</code></pre>
+
+            <div class="warning">
+                <strong>⚠️ Warning:</strong> Components that don't validate against the schema will not be loaded
+                by the inference engine.
+            </div>
+
+            <h2>📝 Best Practices</h2>
+
+            <ul>
+                <li><strong>Single Responsibility:</strong> Each component should have one clear purpose</li>
+                <li><strong>Rich Metadata:</strong> Provide comprehensive semantic context</li>
+                <li><strong>Clear Naming:</strong> Use descriptive IDs and names</li>
+                <li><strong>Versioning:</strong> Always include version in metadata</li>
+                <li><strong>Documentation:</strong> Write clear descriptions</li>
+                <li><strong>Testing:</strong> Test your component with various intents</li>
+            </ul>
+
+            <h2>🔗 Next Steps</h2>
+
+            <ul>
+                <li><a href="inference-rules.html">Create Inference Rules</a></li>
+                <li><a href="../../EXTENDING.md" target="_blank">Extension Guide</a></li>
+                <li><a href="../../examples/usage-examples.md" target="_blank">View Examples</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../js/prism.js"></script>
+</body>
+</html>

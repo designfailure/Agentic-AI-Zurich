@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inference Rules Guide - MCP Scheme Ontology</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <style>
+        .doc-page {
+            max-width: 900px;
+            margin: 100px auto 50px;
+            padding: 0 2rem;
+        }
+        .doc-content h1 {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .doc-content h2 {
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        .doc-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .doc-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        .doc-content pre {
+            margin: 1.5rem 0;
+            background: var(--bg-dark);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+        }
+        .doc-content code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+        }
+        .doc-content ul, .doc-content ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-light);
+        }
+        .doc-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        .doc-nav {
+            margin-bottom: 2rem;
+        }
+        .doc-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .doc-nav a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            padding: 1rem;
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+        }
+        .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        .priority-table th,
+        .priority-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .priority-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo">MCP</span>
+                    <span class="brand-text">Scheme Ontology</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html#home" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#documentation" class="nav-link active">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-page">
+        <div class="doc-nav">
+            <a href="../index.html">← Back to Home</a>
+        </div>
+
+        <div class="doc-content">
+            <h1>Inference Rules Guide</h1>
+
+            <p>
+                Inference rules define the logic for semantic routing, determining when and how components,
+                datasets, and tools are selected based on request characteristics.
+            </p>
+
+            <h2>📐 Rule Structure</h2>
+
+            <p>
+                Every inference rule has the same basic structure:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "unique-rule-id",
+  "name": "Human Readable Rule Name",
+  "condition": {
+    "type": "rule-type",
+    "parameters": { /* ... */ },
+    "expression": "logical expression"
+  },
+  "action": {
+    "type": "action-type",
+    "target": "target-id",
+    "parameters": { /* ... */ }
+  },
+  "priority": 10,
+  "confidenceThreshold": 0.7
+}</code></pre>
+
+            <h2>🎯 Rule Types</h2>
+
+            <h3>1. Intent-Match Rules</h3>
+            <p>
+                Match based on detected user intent:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "query-intent-rule",
+  "name": "Route Query Intent",
+  "condition": {
+    "type": "intent-match",
+    "parameters": {
+      "intents": ["query", "search", "find"],
+      "minConfidence": 0.7
+    },
+    "expression": "intent IN ['query', 'search', 'find'] AND confidence >= 0.7"
+  },
+  "action": {
+    "type": "select-dataset",
+    "target": "primary-database"
+  },
+  "priority": 10,
+  "confidenceThreshold": 0.7
+}</code></pre>
+
+            <h3>2. Keyword-Match Rules</h3>
+            <p>
+                Match based on keywords in the request:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "database-keyword-rule",
+  "name": "Database Keywords Detection",
+  "condition": {
+    "type": "keyword-match",
+    "parameters": {
+      "keywords": ["database", "sql", "table", "query"],
+      "matchType": "any",
+      "caseSensitive": false
+    },
+    "expression": "ANY(keywords) IN ['database', 'sql', 'table', 'query']"
+  },
+  "action": {
+    "type": "route",
+    "target": "database-component"
+  },
+  "priority": 8,
+  "confidenceThreshold": 0.65
+}</code></pre>
+
+            <h3>3. Semantic-Similarity Rules</h3>
+            <p>
+                Match using vector embeddings and semantic similarity:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "semantic-match-rule",
+  "name": "Semantic Domain Match",
+  "condition": {
+    "type": "semantic-similarity",
+    "parameters": {
+      "embeddingModel": "text-embedding-3-large",
+      "similarityThreshold": 0.85,
+      "fields": ["domain", "concepts", "keywords"]
+    },
+    "expression": "cosine_similarity(context, component) >= 0.85"
+  },
+  "action": {
+    "type": "route",
+    "target": "best-matching-component"
+  },
+  "priority": 15,
+  "confidenceThreshold": 0.85
+}</code></pre>
+
+            <h3>4. Pattern-Match Rules</h3>
+            <p>
+                Match using regex patterns for structured inputs:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "sql-pattern-rule",
+  "name": "SQL Query Detection",
+  "condition": {
+    "type": "pattern-match",
+    "parameters": {
+      "pattern": "^(SELECT|INSERT|UPDATE|DELETE)\\s+",
+      "field": "query",
+      "flags": "i"
+    },
+    "expression": "REGEX_MATCH(query, '^(SELECT|INSERT|UPDATE|DELETE)\\s+', 'i')"
+  },
+  "action": {
+    "type": "invoke-tool",
+    "target": "sql-executor"
+  },
+  "priority": 20,
+  "confidenceThreshold": 1.0
+}</code></pre>
+
+            <h3>5. Composite Rules</h3>
+            <p>
+                Combine multiple conditions with AND/OR logic:
+            </p>
+
+            <pre><code class="language-json">{
+  "id": "composite-rule",
+  "name": "Multi-Condition Dataset Selection",
+  "condition": {
+    "type": "composite",
+    "parameters": {
+      "operator": "AND",
+      "conditions": [
+        {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["analyze"]
+          }
+        },
+        {
+          "type": "keyword-match",
+          "parameters": {
+            "keywords": ["financial", "stock"]
+          }
+        },
+        {
+          "type": "semantic-similarity",
+          "parameters": {
+            "similarityThreshold": 0.75
+          }
+        }
+      ]
+    }
+  },
+  "action": {
+    "type": "select-dataset",
+    "target": "financial-dataset"
+  },
+  "priority": 12,
+  "confidenceThreshold": 0.8
+}</code></pre>
+
+            <h2>⚡ Action Types</h2>
+
+            <h3>Available Actions</h3>
+            <ul>
+                <li><code>select-dataset</code>: Choose a dataset</li>
+                <li><code>invoke-tool</code>: Call a tool</li>
+                <li><code>route</code>: Route to a component</li>
+                <li><code>transform</code>: Transform data</li>
+                <li><code>composite</code>: Execute multiple actions</li>
+            </ul>
+
+            <h3>Composite Actions</h3>
+            <pre><code class="language-json">{
+  "action": {
+    "type": "composite",
+    "target": "data-processing-pipeline",
+    "parameters": {
+      "stages": [
+        {
+          "action": "select-dataset",
+          "target": "source-dataset"
+        },
+        {
+          "action": "invoke-tool",
+          "target": "data-transformer"
+        },
+        {
+          "action": "invoke-tool",
+          "target": "data-validator"
+        }
+      ],
+      "executionMode": "sequential"
+    }
+  }
+}</code></pre>
+
+            <h2>📊 Priority System</h2>
+
+            <p>
+                Rules are evaluated in priority order (highest first). Here are recommended priority ranges:
+            </p>
+
+            <table class="priority-table">
+                <thead>
+                    <tr>
+                        <th>Priority Range</th>
+                        <th>Use Case</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90-100</td>
+                        <td>Exact pattern matches</td>
+                        <td>SQL query detection</td>
+                    </tr>
+                    <tr>
+                        <td>70-89</td>
+                        <td>High-confidence semantic matches</td>
+                        <td>Domain-specific routing</td>
+                    </tr>
+                    <tr>
+                        <td>50-69</td>
+                        <td>Intent and keyword matches</td>
+                        <td>General query routing</td>
+                    </tr>
+                    <tr>
+                        <td>30-49</td>
+                        <td>Fuzzy or partial matches</td>
+                        <td>Fallback routing</td>
+                    </tr>
+                    <tr>
+                        <td>0-29</td>
+                        <td>Low-confidence fallbacks</td>
+                        <td>Default handlers</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>🎚️ Confidence Thresholds</h2>
+
+            <p>
+                The <code>confidenceThreshold</code> determines the minimum confidence required for the rule to fire:
+            </p>
+
+            <ul>
+                <li><strong>1.0</strong>: Requires exact match (pattern rules)</li>
+                <li><strong>0.8-0.9</strong>: High confidence required (specific domains)</li>
+                <li><strong>0.6-0.7</strong>: Medium confidence (general routing)</li>
+                <li><strong>0.4-0.5</strong>: Low confidence (broad matches)</li>
+                <li><strong>0.0</strong>: Always fires (fallback rules)</li>
+            </ul>
+
+            <div class="note">
+                <strong>💡 Best Practice:</strong> Set higher thresholds for more specific rules
+                and lower thresholds for general fallback rules.
+            </div>
+
+            <h2>🔄 Rule Execution</h2>
+
+            <p>
+                The inference engine processes rules as follows:
+            </p>
+
+            <ol>
+                <li>Sort rules by priority (highest first)</li>
+                <li>Evaluate each rule's condition</li>
+                <li>Calculate confidence score</li>
+                <li>If score ≥ threshold, execute action</li>
+                <li>Aggregate results from matching rules</li>
+                <li>Select best match based on confidence</li>
+            </ol>
+
+            <h2>📝 Rule Categories</h2>
+
+            <p>
+                Organize rules into categories for better management:
+            </p>
+
+            <pre><code class="language-json">{
+  "ruleCategories": [
+    {
+      "category": "intent-based-routing",
+      "description": "Routes based on user intent",
+      "rules": [ /* ... */ ]
+    },
+    {
+      "category": "semantic-matching",
+      "description": "Matches based on semantic similarity",
+      "rules": [ /* ... */ ]
+    },
+    {
+      "category": "keyword-based",
+      "description": "Exact or fuzzy keyword matching",
+      "rules": [ /* ... */ ]
+    }
+  ]
+}</code></pre>
+
+            <h2>✅ Testing Rules</h2>
+
+            <p>
+                Use the evaluation endpoint to test rules without executing:
+            </p>
+
+            <pre><code class="language-bash">curl -X POST http://localhost:3000/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "intent": "Find customer orders",
+    "context": {}
+  }'</code></pre>
+
+            <h2>🎯 Best Practices</h2>
+
+            <ul>
+                <li><strong>Specific First:</strong> Higher priority for more specific rules</li>
+                <li><strong>Test Thoroughly:</strong> Test with diverse inputs</li>
+                <li><strong>Document Logic:</strong> Use clear names and descriptions</li>
+                <li><strong>Appropriate Thresholds:</strong> Balance precision and recall</li>
+                <li><strong>Avoid Overlaps:</strong> Minimize conflicting rules</li>
+                <li><strong>Monitor Performance:</strong> Track rule match rates</li>
+            </ul>
+
+            <h2>🔗 Next Steps</h2>
+
+            <ul>
+                <li><a href="../../EXTENDING.md" target="_blank">Learn More About Extension</a></li>
+                <li><a href="../../examples/usage-examples.md" target="_blank">View Rule Examples</a></li>
+                <li><a href="../index.html#playground">Try the Interactive Playground</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../js/prism.js"></script>
+</body>
+</html>

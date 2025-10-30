@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - MCP Scheme Ontology</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <style>
+        .doc-page {
+            max-width: 900px;
+            margin: 100px auto 50px;
+            padding: 0 2rem;
+        }
+        .doc-content h1 {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .doc-content h2 {
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        .doc-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .doc-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        .doc-content pre {
+            margin: 1.5rem 0;
+            background: var(--bg-dark);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+        }
+        .doc-content code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+        }
+        .doc-content ul, .doc-content ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-light);
+        }
+        .doc-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        .doc-nav {
+            margin-bottom: 2rem;
+        }
+        .doc-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .doc-nav a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            padding: 1rem;
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo">MCP</span>
+                    <span class="brand-text">Scheme Ontology</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html#home" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#documentation" class="nav-link active">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-page">
+        <div class="doc-nav">
+            <a href="../index.html">← Back to Home</a>
+        </div>
+
+        <div class="doc-content">
+            <h1>Getting Started with MCP Scheme Ontology</h1>
+
+            <p>
+                Welcome to the MCP Scheme Ontology! This guide will help you get started with installing,
+                configuring, and using the semantic inference framework.
+            </p>
+
+            <h2>📦 Installation</h2>
+
+            <h3>Prerequisites</h3>
+            <ul>
+                <li>Node.js 18.x or higher</li>
+                <li>npm or yarn package manager</li>
+                <li>Basic knowledge of JSON and TypeScript</li>
+            </ul>
+
+            <h3>Install from NPM</h3>
+            <pre><code class="language-bash">npm install mcp-scheme-ontology</code></pre>
+
+            <h3>Clone from Repository</h3>
+            <pre><code class="language-bash">git clone https://github.com/designfailure/Agentic-AI-Zurich.git
+cd Agentic-AI-Zurich
+npm install</code></pre>
+
+            <h2>🚀 Quick Start</h2>
+
+            <h3>1. Initialize the Inference Engine</h3>
+            <pre><code class="language-javascript">import { SemanticInferenceEngine } from 'mcp-scheme-ontology';
+
+// Initialize the engine
+const engine = new SemanticInferenceEngine({
+  configPath: './ontology/semantic-inference-engine.json',
+  componentsPath: './components',
+  rulesPath: './inference-rules'
+});
+
+await engine.initialize();</code></pre>
+
+            <h3>2. Register Components</h3>
+            <pre><code class="language-javascript">// Load and register your components
+await engine.loadComponentsFromDirectory('./components');
+
+// Or register a single component
+const myComponent = {
+  id: 'my-component',
+  type: 'source-module',
+  apiStructure: { /* ... */ },
+  semanticContext: {
+    domain: 'my-domain',
+    intents: ['my-intent'],
+    keywords: ['keyword1', 'keyword2']
+  }
+};
+
+engine.registerComponent(myComponent);</code></pre>
+
+            <h3>3. Make an Inference Request</h3>
+            <pre><code class="language-javascript">// Create an inference request
+const request = {
+  intent: 'Find customer orders',
+  context: {
+    user: 'analyst@company.com'
+  },
+  parameters: {
+    customerName: 'John Doe'
+  }
+};
+
+// Get inference result
+const result = await engine.infer(request);
+
+console.log('Selected Component:', result.selectedComponent.id);
+console.log('Confidence:', result.confidence);
+console.log('Reasoning:', result.reasoning);</code></pre>
+
+            <h3>4. Execute the Plan</h3>
+            <pre><code class="language-javascript">// Execute the inference result
+const response = await engine.execute(result.executionPlan);
+
+console.log('Result:', response);</code></pre>
+
+            <div class="note">
+                <strong>💡 Tip:</strong> The inference engine automatically caches results for improved performance.
+                You can configure caching behavior in the engine configuration.
+            </div>
+
+            <h2>🔧 Configuration</h2>
+
+            <h3>Engine Configuration</h3>
+            <p>
+                The inference engine can be configured using a JSON file. Here's an example:
+            </p>
+
+            <pre><code class="language-json">{
+  "enableCaching": true,
+  "cacheTTL": 3600,
+  "enableLogging": true,
+  "logLevel": "info",
+  "maxInferenceDepth": 5,
+  "parallelInference": true,
+  "timeout": {
+    "inferenceTimeout": 5000,
+    "componentTimeout": 30000
+  }
+}</code></pre>
+
+            <h2>📚 Next Steps</h2>
+
+            <p>Now that you have the basics, you can:</p>
+
+            <ul>
+                <li><a href="components.html">Create Your First Component</a></li>
+                <li><a href="inference-rules.html">Define Custom Inference Rules</a></li>
+                <li><a href="../../ARCHITECTURE.md" target="_blank">Learn About the Architecture</a></li>
+                <li><a href="../../examples/usage-examples.md" target="_blank">Explore More Examples</a></li>
+            </ul>
+
+            <h2>❓ Common Issues</h2>
+
+            <h3>Component Not Found</h3>
+            <p>
+                Make sure your component is properly registered and the ID matches the one
+                referenced in your inference rules.
+            </p>
+
+            <h3>Low Confidence Scores</h3>
+            <p>
+                Improve your semantic context by adding more intents, keywords, and concepts
+                to your components. Also ensure your inference rules have appropriate thresholds.
+            </p>
+
+            <h3>Performance Issues</h3>
+            <p>
+                Enable caching, reduce the number of parallel rules, or adjust the
+                <code>maxInferenceDepth</code> configuration.
+            </p>
+
+            <h2>🔗 Additional Resources</h2>
+
+            <ul>
+                <li><a href="../../README.md" target="_blank">README</a></li>
+                <li><a href="../../ARCHITECTURE.md" target="_blank">Architecture Guide</a></li>
+                <li><a href="../../EXTENDING.md" target="_blank">Extension Guide</a></li>
+                <li><a href="https://github.com/designfailure/Agentic-AI-Zurich" target="_blank">GitHub Repository</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../js/prism.js"></script>
+</body>
+</html>

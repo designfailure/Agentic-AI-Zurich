@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MCP Scheme Ontology - A semantic inference framework for Model Context Protocol">
+    <title>MCP Scheme Ontology - Semantic Inference Framework</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/prism.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <span class="logo">MCP</span>
+                <span class="brand-text">Scheme Ontology</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#examples" class="nav-link">Examples</a>
+                <a href="#documentation" class="nav-link">Docs</a>
+                <a href="#playground" class="nav-link">Playground</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    MCP Scheme Ontology
+                </h1>
+                <p class="hero-subtitle">
+                    A comprehensive semantic inference framework for Model Context Protocol
+                </p>
+                <p class="hero-description">
+                    Intelligent routing and component selection through semantic understanding,
+                    enabling context-aware AI systems to automatically discover and invoke the right tools and datasets.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#playground" class="btn btn-primary">Try It Now</a>
+                    <a href="#documentation" class="btn btn-secondary">Documentation</a>
+                    <a href="https://github.com/designfailure/Agentic-AI-Zurich" class="btn btn-outline" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Inference Layers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Matching Strategies</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Semantic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Core Features</h2>
+                <p class="section-description">
+                    Built for intelligent, context-aware routing and component selection
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">Semantic Inference</h3>
+                    <p class="feature-description">
+                        Intelligent routing based on intent recognition, semantic similarity, and context awareness
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3 class="feature-title">Component-Based</h3>
+                    <p class="feature-description">
+                        Self-describing modules with API structures, datasets, and tool calling mechanisms
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Dataset Inference</h3>
+                    <p class="feature-description">
+                        Automatic dataset selection using semantic rules and confidence scoring
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Tool Orchestration</h3>
+                    <p class="feature-description">
+                        Dynamic tool invocation with pipeline, parallel, and semantic routing strategies
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Multi-Strategy Matching</h3>
+                    <p class="feature-description">
+                        Exact patterns, semantic similarity, intent matching, and composite rules
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">High Confidence</h3>
+                    <p class="feature-description">
+                        Priority-based rule execution with confidence thresholds and fallback handling
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Architecture</h2>
+                <p class="section-description">
+                    Four-layer semantic inference engine for intelligent routing
+                </p>
+            </div>
+            <div class="architecture-diagram">
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-number">1</span>
+                        <h3 class="layer-title">Input Processing Layer</h3>
+                    </div>
+                    <div class="layer-components">
+                        <span class="component">Request Parser</span>
+                        <span class="component">Intent Detector</span>
+                        <span class="component">Context Extractor</span>
+                        <span class="component">Embedding Generator</span>
+                    </div>
+                </div>
+                <div class="layer-arrow">↓</div>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-number">2</span>
+                        <h3 class="layer-title">Semantic Analysis Layer</h3>
+                    </div>
+                    <div class="layer-components">
+                        <span class="component">Semantic Matcher</span>
+                        <span class="component">Keyword Analyzer</span>
+                        <span class="component">Domain Classifier</span>
+                        <span class="component">Confidence Scorer</span>
+                    </div>
+                </div>
+                <div class="layer-arrow">↓</div>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-number">3</span>
+                        <h3 class="layer-title">Inference Layer</h3>
+                    </div>
+                    <div class="layer-components">
+                        <span class="component">Rule Engine</span>
+                        <span class="component">Component Selector</span>
+                        <span class="component">Dataset Selector</span>
+                        <span class="component">Tool Selector</span>
+                    </div>
+                </div>
+                <div class="layer-arrow">↓</div>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-number">4</span>
+                        <h3 class="layer-title">Routing Layer</h3>
+                    </div>
+                    <div class="layer-components">
+                        <span class="component">Request Router</span>
+                        <span class="component">Parameter Mapper</span>
+                        <span class="component">Pipeline Orchestrator</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="examples">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Examples</h2>
+                <p class="section-description">
+                    See the semantic inference engine in action
+                </p>
+            </div>
+            <div class="examples-tabs">
+                <button class="tab-button active" data-tab="query">Database Query</button>
+                <button class="tab-button" data-tab="nlp">Text Analysis</button>
+                <button class="tab-button" data-tab="search">Semantic Search</button>
+                <button class="tab-button" data-tab="pipeline">Pipeline</button>
+            </div>
+            <div class="examples-content">
+                <!-- Database Query Example -->
+                <div class="example-tab active" id="tab-query">
+                    <div class="example-grid">
+                        <div class="example-code">
+                            <h4>Request</h4>
+                            <pre><code class="language-json">{
+  "intent": "Find all orders for customer John Doe",
+  "context": {
+    "user": "analyst@company.com"
+  }
+}</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <h4>Inference Result</h4>
+                            <div class="result-item">
+                                <span class="result-label">Selected Component:</span>
+                                <span class="result-value">database-query-component</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Confidence:</span>
+                                <span class="result-value confidence-high">92%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Dataset:</span>
+                                <span class="result-value">customer-database</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Tools:</span>
+                                <span class="result-value">sql-generator → query-optimizer</span>
+                            </div>
+                            <div class="reasoning">
+                                <strong>Reasoning:</strong> Keywords match customer database domain with high intent overlap
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NLP Example -->
+                <div class="example-tab" id="tab-nlp">
+                    <div class="example-grid">
+                        <div class="example-code">
+                            <h4>Request</h4>
+                            <pre><code class="language-json">{
+  "intent": "Analyze sentiment of customer reviews",
+  "parameters": {
+    "text": "The product is amazing!"
+  }
+}</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <h4>Inference Result</h4>
+                            <div class="result-item">
+                                <span class="result-label">Selected Component:</span>
+                                <span class="result-value">nlp-processing-component</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Confidence:</span>
+                                <span class="result-value confidence-high">91%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Tool:</span>
+                                <span class="result-value">sentiment-analyzer</span>
+                            </div>
+                            <div class="reasoning">
+                                <strong>Reasoning:</strong> Sentiment analysis intent matches NLP component capabilities
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Semantic Search Example -->
+                <div class="example-tab" id="tab-search">
+                    <div class="example-grid">
+                        <div class="example-code">
+                            <h4>Request</h4>
+                            <pre><code class="language-json">{
+  "intent": "Find similar documents",
+  "context": {
+    "query": "machine learning in healthcare"
+  }
+}</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <h4>Inference Result</h4>
+                            <div class="result-item">
+                                <span class="result-label">Selected Component:</span>
+                                <span class="result-value">nlp-processing-component</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Confidence:</span>
+                                <span class="result-value confidence-high">89%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Dataset:</span>
+                                <span class="result-value">document-store (vector)</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Tools:</span>
+                                <span class="result-value">embedding-generator → semantic-search</span>
+                            </div>
+                            <div class="reasoning">
+                                <strong>Reasoning:</strong> Semantic search requires embeddings and vector database
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pipeline Example -->
+                <div class="example-tab" id="tab-pipeline">
+                    <div class="example-grid">
+                        <div class="example-code">
+                            <h4>Request</h4>
+                            <pre><code class="language-json">{
+  "intent": "Extract entities and store in database",
+  "context": {
+    "documentIds": ["doc-001", "doc-002"]
+  }
+}</code></pre>
+                        </div>
+                        <div class="example-result">
+                            <h4>Inference Result</h4>
+                            <div class="result-item">
+                                <span class="result-label">Execution Mode:</span>
+                                <span class="result-value">Multi-stage Pipeline</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Confidence:</span>
+                                <span class="result-value confidence-medium">82%</span>
+                            </div>
+                            <div class="pipeline-stages">
+                                <div class="stage">
+                                    <span class="stage-number">1</span>
+                                    <span class="stage-name">Retrieve Documents</span>
+                                </div>
+                                <div class="stage">
+                                    <span class="stage-number">2</span>
+                                    <span class="stage-name">Extract Entities</span>
+                                </div>
+                                <div class="stage">
+                                    <span class="stage-number">3</span>
+                                    <span class="stage-name">Store Results</span>
+                                </div>
+                            </div>
+                            <div class="reasoning">
+                                <strong>Reasoning:</strong> Multi-stage operation requires NLP extraction + database storage
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="documentation" class="documentation">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Documentation</h2>
+                <p class="section-description">
+                    Everything you need to get started with MCP Ontology
+                </p>
+            </div>
+            <div class="docs-grid">
+                <a href="docs/getting-started.html" class="doc-card">
+                    <div class="doc-icon">🚀</div>
+                    <h3 class="doc-title">Getting Started</h3>
+                    <p class="doc-description">Quick start guide and installation instructions</p>
+                </a>
+                <a href="../ARCHITECTURE.md" class="doc-card" target="_blank">
+                    <div class="doc-icon">🏗️</div>
+                    <h3 class="doc-title">Architecture</h3>
+                    <p class="doc-description">Deep dive into the semantic inference architecture</p>
+                </a>
+                <a href="docs/components.html" class="doc-card">
+                    <div class="doc-icon">🔌</div>
+                    <h3 class="doc-title">Components</h3>
+                    <p class="doc-description">Learn how to create and register components</p>
+                </a>
+                <a href="docs/inference-rules.html" class="doc-card">
+                    <div class="doc-icon">📋</div>
+                    <h3 class="doc-title">Inference Rules</h3>
+                    <p class="doc-description">Guide to creating semantic inference rules</p>
+                </a>
+                <a href="../examples/usage-examples.md" class="doc-card" target="_blank">
+                    <div class="doc-icon">💡</div>
+                    <h3 class="doc-title">Examples</h3>
+                    <p class="doc-description">Practical examples and use cases</p>
+                </a>
+                <a href="../EXTENDING.md" class="doc-card" target="_blank">
+                    <div class="doc-icon">🔧</div>
+                    <h3 class="doc-title">Extending</h3>
+                    <p class="doc-description">How to extend the ontology with custom features</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Playground Section -->
+    <section id="playground" class="playground">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Interactive Playground</h2>
+                <p class="section-description">
+                    Try the semantic inference engine live
+                </p>
+            </div>
+            <div class="playground-container">
+                <div class="playground-input">
+                    <h3>Input Request</h3>
+                    <textarea id="playgroundInput" class="playground-textarea" placeholder='Enter your request JSON...
+Example:
+{
+  "intent": "Find customer orders",
+  "context": {}
+}'>{
+  "intent": "Find customer orders",
+  "context": {
+    "user": "analyst@company.com"
+  }
+}</textarea>
+                    <button id="runInference" class="btn btn-primary">Run Inference</button>
+                </div>
+                <div class="playground-output">
+                    <h3>Inference Result</h3>
+                    <div id="playgroundResult" class="playground-result">
+                        <p class="placeholder-text">Click "Run Inference" to see results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>MCP Scheme Ontology</h4>
+                    <p>A semantic inference framework for intelligent routing and component selection</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#documentation">Documentation</a></li>
+                        <li><a href="../ARCHITECTURE.md" target="_blank">Architecture</a></li>
+                        <li><a href="../examples/usage-examples.md" target="_blank">Examples</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="https://github.com/designfailure/Agentic-AI-Zurich" target="_blank">GitHub</a></li>
+                        <li><a href="../README.md" target="_blank">README</a></li>
+                        <li><a href="../EXTENDING.md" target="_blank">Contributing</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MCP Scheme Ontology. MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/prism.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
