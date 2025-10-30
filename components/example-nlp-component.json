@@ -1,0 +1,433 @@
+{
+  "$schema": "../schemas/mcp-component-schema.json",
+  "id": "nlp-processing-component",
+  "type": "source-module",
+  "name": "NLP Processing Component",
+  "description": "MCP component for natural language processing with semantic tool routing",
+  "apiStructure": {
+    "protocol": "rest",
+    "baseUrl": "http://localhost:8000/api/v1",
+    "endpoints": [
+      {
+        "name": "analyzeText",
+        "method": "POST",
+        "path": "/analyze",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "description": "Text to analyze",
+            "semanticRole": "input"
+          },
+          {
+            "name": "analysisType",
+            "type": "string",
+            "required": false,
+            "description": "Type of analysis (sentiment, entities, keywords, summary)",
+            "semanticRole": "configuration"
+          },
+          {
+            "name": "language",
+            "type": "string",
+            "required": false,
+            "description": "Language code",
+            "semanticRole": "context"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "schema": {
+            "analysis": "object",
+            "confidence": "number",
+            "processingTime": "number"
+          },
+          "semanticType": "nlp-analysis-result"
+        },
+        "semanticTags": ["nlp", "text-analysis", "ai", "language"]
+      },
+      {
+        "name": "semanticSearch",
+        "method": "POST",
+        "path": "/search",
+        "parameters": [
+          {
+            "name": "query",
+            "type": "string",
+            "required": true,
+            "description": "Search query",
+            "semanticRole": "query"
+          },
+          {
+            "name": "corpus",
+            "type": "string",
+            "required": true,
+            "description": "Corpus ID to search",
+            "semanticRole": "context"
+          },
+          {
+            "name": "topK",
+            "type": "number",
+            "required": false,
+            "description": "Number of results to return",
+            "semanticRole": "filter"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "schema": {
+            "results": "array",
+            "scores": "array"
+          },
+          "semanticType": "semantic-search-results"
+        },
+        "semanticTags": ["search", "semantic", "retrieval"]
+      }
+    ],
+    "authentication": {
+      "type": "apiKey",
+      "configuration": {
+        "headerName": "X-API-Key"
+      }
+    }
+  },
+  "datasetInference": {
+    "inferenceType": "semantic-matching",
+    "datasets": [
+      {
+        "id": "text-corpus-general",
+        "name": "General Text Corpus",
+        "type": "vector",
+        "schema": {
+          "embeddingDimension": 1536,
+          "documentCount": 1000000,
+          "indexType": "ivf-flat"
+        },
+        "semanticTags": ["general", "text", "documents", "knowledge"],
+        "contentDomain": "general-knowledge",
+        "accessMethod": {
+          "type": "vector-db",
+          "endpoint": "http://localhost:6333/collections/general_corpus"
+        }
+      },
+      {
+        "id": "domain-specific-corpus",
+        "name": "Domain-Specific Text Corpus",
+        "type": "vector",
+        "schema": {
+          "embeddingDimension": 1536,
+          "domains": ["medical", "legal", "technical"],
+          "indexType": "hnsw"
+        },
+        "semanticTags": ["specialized", "domain-specific", "professional"],
+        "contentDomain": "specialized-knowledge",
+        "accessMethod": {
+          "type": "vector-db",
+          "endpoint": "http://localhost:6333/collections/domain_corpus"
+        }
+      }
+    ],
+    "inferenceRules": [
+      {
+        "id": "general-text-rule",
+        "name": "General Text to General Corpus",
+        "condition": {
+          "type": "keyword-match",
+          "parameters": {
+            "keywords": ["general", "common", "everyday"],
+            "matchType": "any"
+          },
+          "expression": "domain == 'general' OR specificDomain == null"
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "text-corpus-general",
+          "parameters": {
+            "searchStrategy": "broad-coverage"
+          }
+        },
+        "priority": 5,
+        "confidenceThreshold": 0.6
+      },
+      {
+        "id": "specialized-domain-rule",
+        "name": "Specialized Text to Domain Corpus",
+        "condition": {
+          "type": "semantic-similarity",
+          "parameters": {
+            "domains": ["medical", "legal", "technical"],
+            "similarityThreshold": 0.85
+          },
+          "expression": "domain IN ['medical', 'legal', 'technical'] AND domainConfidence >= 0.85"
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "domain-specific-corpus",
+          "parameters": {
+            "searchStrategy": "domain-focused",
+            "filterByDomain": true
+          }
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.85
+      }
+    ]
+  },
+  "toolCalling": {
+    "invocationStrategy": "pipeline",
+    "tools": [
+      {
+        "id": "sentiment-analyzer",
+        "name": "Sentiment Analysis Tool",
+        "description": "Analyzes sentiment of text",
+        "function": "analyzeSentiment",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          }
+        ],
+        "semanticPurpose": "sentiment-analysis",
+        "requiredContext": ["language"]
+      },
+      {
+        "id": "entity-extractor",
+        "name": "Named Entity Recognition",
+        "description": "Extracts named entities from text",
+        "function": "extractEntities",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "entityTypes",
+            "type": "array",
+            "required": false,
+            "semanticRole": "filter"
+          }
+        ],
+        "semanticPurpose": "entity-extraction",
+        "requiredContext": ["language", "domain"]
+      },
+      {
+        "id": "keyword-extractor",
+        "name": "Keyword Extraction",
+        "description": "Extracts key terms and phrases",
+        "function": "extractKeywords",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "maxKeywords",
+            "type": "number",
+            "required": false,
+            "semanticRole": "configuration"
+          }
+        ],
+        "semanticPurpose": "keyword-extraction",
+        "requiredContext": []
+      },
+      {
+        "id": "text-summarizer",
+        "name": "Text Summarization",
+        "description": "Generates concise summaries of text",
+        "function": "summarizeText",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "maxLength",
+            "type": "number",
+            "required": false,
+            "semanticRole": "configuration"
+          }
+        ],
+        "semanticPurpose": "text-summarization",
+        "requiredContext": []
+      },
+      {
+        "id": "embedding-generator",
+        "name": "Text Embedding Generator",
+        "description": "Generates vector embeddings for text",
+        "function": "generateEmbedding",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "model",
+            "type": "string",
+            "required": false,
+            "semanticRole": "configuration"
+          }
+        ],
+        "semanticPurpose": "embedding-generation",
+        "requiredContext": []
+      }
+    ],
+    "toolSelectionRules": [
+      {
+        "id": "sentiment-intent-rule",
+        "name": "Sentiment Analysis Intent",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["sentiment", "emotion", "opinion"],
+            "keywords": ["sentiment", "feeling", "opinion", "positive", "negative"]
+          },
+          "expression": "intent IN ['sentiment', 'emotion', 'opinion'] OR ANY(keywords) IN ['sentiment', 'feeling', 'opinion']"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "sentiment-analyzer"
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.75
+      },
+      {
+        "id": "entity-intent-rule",
+        "name": "Entity Extraction Intent",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["entities", "extract", "identify"],
+            "keywords": ["entity", "name", "person", "organization", "location"]
+          },
+          "expression": "intent IN ['entities', 'extract', 'identify'] OR ANY(keywords) IN ['entity', 'name', 'person', 'organization']"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "entity-extractor"
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.75
+      },
+      {
+        "id": "summarization-intent-rule",
+        "name": "Summarization Intent",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["summarize", "condense", "abstract"],
+            "keywords": ["summary", "summarize", "brief", "overview"]
+          },
+          "expression": "intent IN ['summarize', 'condense', 'abstract'] OR ANY(keywords) IN ['summary', 'summarize', 'brief']"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "text-summarizer"
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.8
+      },
+      {
+        "id": "search-embedding-rule",
+        "name": "Semantic Search Requires Embeddings",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["search", "find", "retrieve"],
+            "requiresEmbedding": true
+          },
+          "expression": "intent IN ['search', 'find', 'retrieve'] AND searchType == 'semantic'"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "embedding-generator",
+          "parameters": {
+            "pipelineNext": "semantic-search"
+          }
+        },
+        "priority": 15,
+        "confidenceThreshold": 0.9
+      }
+    ]
+  },
+  "semanticContext": {
+    "domain": "natural-language-processing",
+    "intents": [
+      "analyze-text",
+      "extract-information",
+      "semantic-search",
+      "text-understanding",
+      "language-processing"
+    ],
+    "keywords": [
+      "nlp",
+      "text",
+      "language",
+      "analysis",
+      "sentiment",
+      "entities",
+      "keywords",
+      "summary",
+      "embedding",
+      "semantic"
+    ],
+    "concepts": [
+      "natural-language-understanding",
+      "text-analytics",
+      "information-extraction",
+      "semantic-similarity",
+      "vector-embeddings"
+    ],
+    "embedding": {
+      "model": "text-embedding-3-large",
+      "vector": [0.045, 0.032, -0.018, 0.076, -0.051]
+    }
+  },
+  "capabilities": [
+    {
+      "name": "Sentiment Analysis",
+      "type": "analyze",
+      "description": "Analyze emotional tone and sentiment",
+      "semanticSignature": "text -> sentiment-score"
+    },
+    {
+      "name": "Entity Extraction",
+      "type": "analyze",
+      "description": "Extract named entities from text",
+      "semanticSignature": "text -> entities-list"
+    },
+    {
+      "name": "Keyword Extraction",
+      "type": "analyze",
+      "description": "Extract important keywords and phrases",
+      "semanticSignature": "text -> keywords-list"
+    },
+    {
+      "name": "Text Summarization",
+      "type": "transform",
+      "description": "Generate concise summaries",
+      "semanticSignature": "text -> summary"
+    },
+    {
+      "name": "Semantic Search",
+      "type": "retrieve",
+      "description": "Search using semantic understanding",
+      "semanticSignature": "query + corpus -> ranked-results"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "author": "MCP Team",
+    "created": "2025-01-15T00:00:00Z",
+    "updated": "2025-01-15T00:00:00Z"
+  }
+}

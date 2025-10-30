@@ -1,0 +1,318 @@
+{
+  "$schema": "../schemas/mcp-component-schema.json",
+  "title": "Semantic Inference Rules for MCP",
+  "description": "Rule sets for semantic routing and dataset/tool selection",
+  "version": "1.0.0",
+  "ruleCategories": [
+    {
+      "category": "intent-based-routing",
+      "description": "Routes based on user intent analysis",
+      "rules": [
+        {
+          "id": "rule-intent-001",
+          "name": "Query Intent to Dataset",
+          "condition": {
+            "type": "intent-match",
+            "parameters": {
+              "intents": ["query", "search", "find", "lookup"],
+              "minConfidence": 0.7
+            },
+            "expression": "intent IN ['query', 'search', 'find', 'lookup'] AND confidence >= 0.7"
+          },
+          "action": {
+            "type": "select-dataset",
+            "target": "primary-knowledge-base",
+            "parameters": {
+              "retrievalMethod": "semantic-search",
+              "maxResults": 10
+            }
+          },
+          "priority": 10,
+          "confidenceThreshold": 0.7
+        },
+        {
+          "id": "rule-intent-002",
+          "name": "Transform Intent to Tool",
+          "condition": {
+            "type": "intent-match",
+            "parameters": {
+              "intents": ["convert", "transform", "modify", "process"],
+              "minConfidence": 0.75
+            },
+            "expression": "intent IN ['convert', 'transform', 'modify', 'process'] AND confidence >= 0.75"
+          },
+          "action": {
+            "type": "invoke-tool",
+            "target": "data-transformer",
+            "parameters": {
+              "mode": "semantic-mapping"
+            }
+          },
+          "priority": 9,
+          "confidenceThreshold": 0.75
+        },
+        {
+          "id": "rule-intent-003",
+          "name": "Analysis Intent to Tool Chain",
+          "condition": {
+            "type": "intent-match",
+            "parameters": {
+              "intents": ["analyze", "evaluate", "assess", "examine"],
+              "minConfidence": 0.8
+            },
+            "expression": "intent IN ['analyze', 'evaluate', 'assess', 'examine'] AND confidence >= 0.8"
+          },
+          "action": {
+            "type": "composite",
+            "target": "analysis-pipeline",
+            "parameters": {
+              "stages": ["data-retrieval", "preprocessing", "analysis", "reporting"],
+              "executionMode": "sequential"
+            }
+          },
+          "priority": 8,
+          "confidenceThreshold": 0.8
+        }
+      ]
+    },
+    {
+      "category": "semantic-matching",
+      "description": "Matches based on semantic similarity",
+      "rules": [
+        {
+          "id": "rule-semantic-001",
+          "name": "Domain Semantic Match",
+          "condition": {
+            "type": "semantic-similarity",
+            "parameters": {
+              "embeddingModel": "text-embedding-3-large",
+              "similarityThreshold": 0.85,
+              "fields": ["domain", "concepts", "keywords"]
+            },
+            "expression": "semantic_similarity(context.domain, component.domain) >= 0.85"
+          },
+          "action": {
+            "type": "route",
+            "target": "best-matching-component",
+            "parameters": {
+              "routingStrategy": "highest-similarity",
+              "fallback": "general-component"
+            }
+          },
+          "priority": 15,
+          "confidenceThreshold": 0.85
+        },
+        {
+          "id": "rule-semantic-002",
+          "name": "Keyword Vector Match",
+          "condition": {
+            "type": "semantic-similarity",
+            "parameters": {
+              "embeddingModel": "text-embedding-3-large",
+              "similarityThreshold": 0.75,
+              "fields": ["keywords"]
+            },
+            "expression": "cosine_similarity(context.keywords_vector, component.keywords_vector) >= 0.75"
+          },
+          "action": {
+            "type": "select-dataset",
+            "target": "matched-dataset",
+            "parameters": {
+              "retrievalMode": "hybrid-search",
+              "weightSemanticScore": 0.7,
+              "weightKeywordScore": 0.3
+            }
+          },
+          "priority": 12,
+          "confidenceThreshold": 0.75
+        }
+      ]
+    },
+    {
+      "category": "keyword-based",
+      "description": "Exact or fuzzy keyword matching",
+      "rules": [
+        {
+          "id": "rule-keyword-001",
+          "name": "Technical Domain Keywords",
+          "condition": {
+            "type": "keyword-match",
+            "parameters": {
+              "keywords": ["database", "sql", "query", "table", "schema"],
+              "matchType": "any",
+              "caseSensitive": false
+            },
+            "expression": "ANY(context.keywords) IN component.keywords"
+          },
+          "action": {
+            "type": "select-dataset",
+            "target": "database-dataset",
+            "parameters": {
+              "queryType": "structured"
+            }
+          },
+          "priority": 7,
+          "confidenceThreshold": 0.6
+        },
+        {
+          "id": "rule-keyword-002",
+          "name": "API Keywords",
+          "condition": {
+            "type": "keyword-match",
+            "parameters": {
+              "keywords": ["api", "endpoint", "rest", "http", "request"],
+              "matchType": "any",
+              "caseSensitive": false
+            },
+            "expression": "ANY(context.keywords) IN ['api', 'endpoint', 'rest', 'http', 'request']"
+          },
+          "action": {
+            "type": "invoke-tool",
+            "target": "api-caller",
+            "parameters": {
+              "protocol": "rest"
+            }
+          },
+          "priority": 7,
+          "confidenceThreshold": 0.65
+        }
+      ]
+    },
+    {
+      "category": "pattern-based",
+      "description": "Pattern matching for structured queries",
+      "rules": [
+        {
+          "id": "rule-pattern-001",
+          "name": "Structured Query Pattern",
+          "condition": {
+            "type": "pattern-match",
+            "parameters": {
+              "pattern": "^(SELECT|INSERT|UPDATE|DELETE)\\s+.*",
+              "field": "query",
+              "flags": "i"
+            },
+            "expression": "REGEX_MATCH(context.query, '^(SELECT|INSERT|UPDATE|DELETE)\\s+.*', 'i')"
+          },
+          "action": {
+            "type": "invoke-tool",
+            "target": "sql-executor",
+            "parameters": {
+              "validationEnabled": true,
+              "safeMode": true
+            }
+          },
+          "priority": 20,
+          "confidenceThreshold": 0.95
+        },
+        {
+          "id": "rule-pattern-002",
+          "name": "JSON-RPC Pattern",
+          "condition": {
+            "type": "pattern-match",
+            "parameters": {
+              "pattern": "^\\{\\s*\"jsonrpc\":\\s*\"2\\.0\"",
+              "field": "request",
+              "flags": ""
+            },
+            "expression": "REGEX_MATCH(context.request, '^\\{\\s*\"jsonrpc\":\\s*\"2\\.0\"', '')"
+          },
+          "action": {
+            "type": "route",
+            "target": "jsonrpc-handler",
+            "parameters": {
+              "protocol": "jsonrpc-2.0"
+            }
+          },
+          "priority": 18,
+          "confidenceThreshold": 1.0
+        }
+      ]
+    },
+    {
+      "category": "composite-rules",
+      "description": "Complex rules combining multiple conditions",
+      "rules": [
+        {
+          "id": "rule-composite-001",
+          "name": "Multi-condition Dataset Selection",
+          "condition": {
+            "type": "composite",
+            "parameters": {
+              "operator": "AND",
+              "conditions": [
+                {
+                  "type": "intent-match",
+                  "parameters": {
+                    "intents": ["query"],
+                    "minConfidence": 0.7
+                  }
+                },
+                {
+                  "type": "keyword-match",
+                  "parameters": {
+                    "keywords": ["financial", "stock", "market"],
+                    "matchType": "any"
+                  }
+                },
+                {
+                  "type": "semantic-similarity",
+                  "parameters": {
+                    "similarityThreshold": 0.75,
+                    "field": "domain"
+                  }
+                }
+              ]
+            },
+            "expression": "(intent == 'query' AND confidence >= 0.7) AND (ANY(keywords) IN ['financial', 'stock', 'market']) AND (semantic_similarity >= 0.75)"
+          },
+          "action": {
+            "type": "composite",
+            "target": "financial-query-pipeline",
+            "parameters": {
+              "stages": [
+                {
+                  "action": "select-dataset",
+                  "target": "financial-dataset"
+                },
+                {
+                  "action": "invoke-tool",
+                  "target": "financial-analyzer"
+                },
+                {
+                  "action": "transform",
+                  "target": "result-formatter"
+                }
+              ]
+            }
+          },
+          "priority": 25,
+          "confidenceThreshold": 0.85
+        }
+      ]
+    }
+  ],
+  "defaultRules": {
+    "fallbackRule": {
+      "id": "rule-fallback-001",
+      "name": "Default Fallback",
+      "condition": {
+        "type": "intent-match",
+        "parameters": {
+          "intents": ["*"],
+          "minConfidence": 0.0
+        },
+        "expression": "true"
+      },
+      "action": {
+        "type": "route",
+        "target": "general-purpose-component",
+        "parameters": {
+          "mode": "best-effort"
+        }
+      },
+      "priority": 0,
+      "confidenceThreshold": 0.0
+    }
+  }
+}

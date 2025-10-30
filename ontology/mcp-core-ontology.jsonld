@@ -1,0 +1,118 @@
+{
+  "@context": {
+    "mcp": "https://modelcontextprotocol.io/ontology#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "http://schema.org/"
+  },
+  "@graph": [
+    {
+      "@id": "mcp:MCPOntology",
+      "@type": "owl:Ontology",
+      "rdfs:label": "Model Context Protocol Ontology",
+      "rdfs:comment": "A semantic ontology for MCP architecture with inference-based routing",
+      "owl:versionInfo": "1.0.0"
+    },
+    {
+      "@id": "mcp:SourceModule",
+      "@type": "owl:Class",
+      "rdfs:label": "Source Module",
+      "rdfs:comment": "A component that provides API structure and dataset inferences",
+      "rdfs:subClassOf": "mcp:Component"
+    },
+    {
+      "@id": "mcp:Component",
+      "@type": "owl:Class",
+      "rdfs:label": "MCP Component",
+      "rdfs:comment": "Base class for all MCP components"
+    },
+    {
+      "@id": "mcp:APIStructure",
+      "@type": "owl:Class",
+      "rdfs:label": "API Structure",
+      "rdfs:comment": "Defines the interface and capabilities of a component"
+    },
+    {
+      "@id": "mcp:DatasetInference",
+      "@type": "owl:Class",
+      "rdfs:label": "Dataset Inference",
+      "rdfs:comment": "Semantic rules for dataset selection and retrieval"
+    },
+    {
+      "@id": "mcp:ToolCalling",
+      "@type": "owl:Class",
+      "rdfs:label": "Tool Calling",
+      "rdfs:comment": "Mechanism for invoking tools through semantic inference"
+    },
+    {
+      "@id": "mcp:SemanticInferenceEngine",
+      "@type": "owl:Class",
+      "rdfs:label": "Semantic Inference Engine",
+      "rdfs:comment": "Core reasoning engine for MCP routing and selection"
+    },
+    {
+      "@id": "mcp:hasAPIStructure",
+      "@type": "owl:ObjectProperty",
+      "rdfs:label": "has API structure",
+      "rdfs:domain": "mcp:SourceModule",
+      "rdfs:range": "mcp:APIStructure"
+    },
+    {
+      "@id": "mcp:providesDatasetInference",
+      "@type": "owl:ObjectProperty",
+      "rdfs:label": "provides dataset inference",
+      "rdfs:domain": "mcp:SourceModule",
+      "rdfs:range": "mcp:DatasetInference"
+    },
+    {
+      "@id": "mcp:supportsToolCalling",
+      "@type": "owl:ObjectProperty",
+      "rdfs:label": "supports tool calling",
+      "rdfs:domain": "mcp:SourceModule",
+      "rdfs:range": "mcp:ToolCalling"
+    },
+    {
+      "@id": "mcp:hasSemanticContext",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:label": "has semantic context",
+      "rdfs:domain": "mcp:Component",
+      "rdfs:range": "xsd:string"
+    },
+    {
+      "@id": "mcp:hasCapability",
+      "@type": "owl:ObjectProperty",
+      "rdfs:label": "has capability",
+      "rdfs:domain": "mcp:Component",
+      "rdfs:range": "mcp:Capability"
+    },
+    {
+      "@id": "mcp:Capability",
+      "@type": "owl:Class",
+      "rdfs:label": "Capability",
+      "rdfs:comment": "A specific function or service provided by a component"
+    },
+    {
+      "@id": "mcp:inferredBy",
+      "@type": "owl:ObjectProperty",
+      "rdfs:label": "inferred by",
+      "rdfs:domain": "mcp:DatasetInference",
+      "rdfs:range": "mcp:SemanticInferenceEngine"
+    },
+    {
+      "@id": "mcp:matchesIntent",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:label": "matches intent",
+      "rdfs:domain": "mcp:Component",
+      "rdfs:range": "xsd:string"
+    },
+    {
+      "@id": "mcp:hasConfidenceScore",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:label": "has confidence score",
+      "rdfs:domain": "mcp:DatasetInference",
+      "rdfs:range": "xsd:float"
+    }
+  ]
+}

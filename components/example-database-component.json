@@ -1,0 +1,390 @@
+{
+  "$schema": "../schemas/mcp-component-schema.json",
+  "id": "database-query-component",
+  "type": "source-module",
+  "name": "Database Query Component",
+  "description": "MCP component for semantic database querying with inference-based dataset selection",
+  "apiStructure": {
+    "protocol": "jsonrpc",
+    "baseUrl": "http://localhost:3000/rpc",
+    "endpoints": [
+      {
+        "name": "semanticQuery",
+        "method": "query.semantic",
+        "parameters": [
+          {
+            "name": "query",
+            "type": "string",
+            "required": true,
+            "description": "Natural language or structured query",
+            "semanticRole": "query"
+          },
+          {
+            "name": "context",
+            "type": "object",
+            "required": false,
+            "description": "Additional context for query refinement",
+            "semanticRole": "context"
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "required": false,
+            "description": "Maximum number of results",
+            "semanticRole": "filter"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "schema": {
+            "results": "array",
+            "metadata": "object",
+            "confidence": "number"
+          },
+          "semanticType": "query-result-set"
+        },
+        "semanticTags": ["query", "database", "search", "retrieval"]
+      },
+      {
+        "name": "executeStructured",
+        "method": "query.execute",
+        "parameters": [
+          {
+            "name": "sql",
+            "type": "string",
+            "required": true,
+            "description": "SQL query to execute",
+            "semanticRole": "query"
+          },
+          {
+            "name": "parameters",
+            "type": "array",
+            "required": false,
+            "description": "Query parameters for prepared statements",
+            "semanticRole": "parameters"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "schema": {
+            "rows": "array",
+            "rowCount": "number",
+            "fields": "array"
+          },
+          "semanticType": "structured-result-set"
+        },
+        "semanticTags": ["sql", "structured", "database"]
+      }
+    ],
+    "authentication": {
+      "type": "bearer",
+      "configuration": {
+        "headerName": "Authorization",
+        "scheme": "Bearer"
+      }
+    }
+  },
+  "datasetInference": {
+    "inferenceType": "hybrid",
+    "datasets": [
+      {
+        "id": "customer-database",
+        "name": "Customer Database",
+        "type": "structured",
+        "schema": {
+          "tables": ["customers", "orders", "products"],
+          "primaryKeys": {
+            "customers": "customer_id",
+            "orders": "order_id",
+            "products": "product_id"
+          }
+        },
+        "semanticTags": ["customer", "crm", "sales", "orders"],
+        "contentDomain": "customer-relationship-management",
+        "accessMethod": {
+          "type": "postgres",
+          "endpoint": "postgresql://localhost:5432/customers"
+        }
+      },
+      {
+        "id": "analytics-warehouse",
+        "name": "Analytics Data Warehouse",
+        "type": "structured",
+        "schema": {
+          "tables": ["fact_sales", "dim_time", "dim_product", "dim_customer"],
+          "type": "star-schema"
+        },
+        "semanticTags": ["analytics", "reporting", "business-intelligence", "metrics"],
+        "contentDomain": "business-analytics",
+        "accessMethod": {
+          "type": "bigquery",
+          "endpoint": "bigquery://project-id/analytics_dataset"
+        }
+      },
+      {
+        "id": "document-store",
+        "name": "Document Vector Store",
+        "type": "vector",
+        "schema": {
+          "embeddingDimension": 1536,
+          "indexType": "hnsw",
+          "distanceMetric": "cosine"
+        },
+        "semanticTags": ["documents", "semantic-search", "knowledge-base"],
+        "contentDomain": "document-management",
+        "accessMethod": {
+          "type": "vector-db",
+          "endpoint": "http://localhost:6333/collections/documents"
+        }
+      }
+    ],
+    "inferenceRules": [
+      {
+        "id": "customer-intent-rule",
+        "name": "Customer Intent to Customer DB",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["customer-query", "order-lookup", "customer-info"],
+            "keywords": ["customer", "order", "purchase", "buyer"]
+          },
+          "expression": "intent IN ['customer-query', 'order-lookup', 'customer-info'] OR ANY(keywords) IN ['customer', 'order', 'purchase', 'buyer']"
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "customer-database",
+          "parameters": {
+            "queryMode": "structured",
+            "optimization": "indexed-lookup"
+          }
+        },
+        "priority": 10,
+        "confidenceThreshold": 0.7
+      },
+      {
+        "id": "analytics-intent-rule",
+        "name": "Analytics Intent to Warehouse",
+        "condition": {
+          "type": "keyword-match",
+          "parameters": {
+            "keywords": ["analytics", "report", "metrics", "kpi", "dashboard"],
+            "matchType": "any"
+          },
+          "expression": "ANY(keywords) IN ['analytics', 'report', 'metrics', 'kpi', 'dashboard']"
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "analytics-warehouse",
+          "parameters": {
+            "queryMode": "olap",
+            "aggregationEnabled": true
+          }
+        },
+        "priority": 9,
+        "confidenceThreshold": 0.75
+      },
+      {
+        "id": "semantic-search-rule",
+        "name": "Semantic Search to Vector Store",
+        "condition": {
+          "type": "semantic-similarity",
+          "parameters": {
+            "similarityThreshold": 0.8,
+            "requiresSemanticSearch": true
+          },
+          "expression": "queryType == 'natural-language' AND requireSemanticSearch == true"
+        },
+        "action": {
+          "type": "select-dataset",
+          "target": "document-store",
+          "parameters": {
+            "searchMode": "vector-similarity",
+            "rerankResults": true
+          }
+        },
+        "priority": 12,
+        "confidenceThreshold": 0.8
+      }
+    ]
+  },
+  "toolCalling": {
+    "invocationStrategy": "semantic-routing",
+    "tools": [
+      {
+        "id": "sql-generator",
+        "name": "Natural Language to SQL Generator",
+        "description": "Converts natural language queries to SQL",
+        "function": "generateSQL",
+        "parameters": [
+          {
+            "name": "naturalLanguageQuery",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "targetSchema",
+            "type": "object",
+            "required": true,
+            "semanticRole": "context"
+          }
+        ],
+        "semanticPurpose": "query-translation",
+        "requiredContext": ["database-schema", "table-metadata"]
+      },
+      {
+        "id": "result-formatter",
+        "name": "Query Result Formatter",
+        "description": "Formats query results according to output specifications",
+        "function": "formatResults",
+        "parameters": [
+          {
+            "name": "results",
+            "type": "array",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "format",
+            "type": "string",
+            "required": true,
+            "semanticRole": "configuration"
+          }
+        ],
+        "semanticPurpose": "data-transformation",
+        "requiredContext": ["output-format-specification"]
+      },
+      {
+        "id": "query-optimizer",
+        "name": "Query Optimizer",
+        "description": "Optimizes SQL queries for performance",
+        "function": "optimizeQuery",
+        "parameters": [
+          {
+            "name": "sqlQuery",
+            "type": "string",
+            "required": true,
+            "semanticRole": "input"
+          },
+          {
+            "name": "optimizationHints",
+            "type": "object",
+            "required": false,
+            "semanticRole": "configuration"
+          }
+        ],
+        "semanticPurpose": "query-optimization",
+        "requiredContext": ["execution-statistics", "index-information"]
+      }
+    ],
+    "toolSelectionRules": [
+      {
+        "id": "nl-query-tool-selection",
+        "name": "Natural Language Query Processing",
+        "condition": {
+          "type": "pattern-match",
+          "parameters": {
+            "pattern": "^(?!SELECT|INSERT|UPDATE|DELETE).*",
+            "field": "query"
+          },
+          "expression": "NOT REGEX_MATCH(query, '^(SELECT|INSERT|UPDATE|DELETE)\\s+')"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "sql-generator",
+          "parameters": {
+            "pipelineNext": "query-optimizer"
+          }
+        },
+        "priority": 15,
+        "confidenceThreshold": 0.8
+      },
+      {
+        "id": "format-results-rule",
+        "name": "Always Format Results",
+        "condition": {
+          "type": "intent-match",
+          "parameters": {
+            "intents": ["*"],
+            "stage": "post-execution"
+          },
+          "expression": "executionStage == 'post-execution'"
+        },
+        "action": {
+          "type": "invoke-tool",
+          "target": "result-formatter",
+          "parameters": {
+            "defaultFormat": "json"
+          }
+        },
+        "priority": 5,
+        "confidenceThreshold": 1.0
+      }
+    ]
+  },
+  "semanticContext": {
+    "domain": "database-query",
+    "intents": [
+      "query-database",
+      "retrieve-data",
+      "search-records",
+      "analyze-data",
+      "execute-sql"
+    ],
+    "keywords": [
+      "database",
+      "query",
+      "sql",
+      "select",
+      "search",
+      "find",
+      "retrieve",
+      "data",
+      "records",
+      "table"
+    ],
+    "concepts": [
+      "relational-database",
+      "structured-query",
+      "data-retrieval",
+      "semantic-search",
+      "vector-search"
+    ],
+    "embedding": {
+      "model": "text-embedding-3-large",
+      "vector": [0.023, -0.015, 0.087, 0.043, -0.062]
+    }
+  },
+  "capabilities": [
+    {
+      "name": "Semantic Query",
+      "type": "query",
+      "description": "Execute queries using natural language or semantic understanding",
+      "semanticSignature": "natural-language-query -> structured-results"
+    },
+    {
+      "name": "Structured Query",
+      "type": "query",
+      "description": "Execute structured SQL queries",
+      "semanticSignature": "sql-query -> result-set"
+    },
+    {
+      "name": "Dataset Selection",
+      "type": "retrieve",
+      "description": "Automatically select appropriate dataset based on query intent",
+      "semanticSignature": "query-context -> optimal-dataset"
+    },
+    {
+      "name": "Query Optimization",
+      "type": "transform",
+      "description": "Optimize queries for performance",
+      "semanticSignature": "query -> optimized-query"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "author": "MCP Team",
+    "created": "2025-01-15T00:00:00Z",
+    "updated": "2025-01-15T00:00:00Z"
+  }
+}

@@ -1,0 +1,416 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modelcontextprotocol.io/schemas/component",
+  "title": "MCP Component Schema",
+  "description": "Schema for MCP source-module components with API structure and dataset inference",
+  "type": "object",
+  "required": ["id", "type", "apiStructure", "semanticContext"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the component",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["source-module", "tool", "dataset", "composite"],
+      "description": "Type of MCP component"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the component"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of component functionality"
+    },
+    "apiStructure": {
+      "$ref": "#/definitions/APIStructure"
+    },
+    "datasetInference": {
+      "$ref": "#/definitions/DatasetInference"
+    },
+    "toolCalling": {
+      "$ref": "#/definitions/ToolCalling"
+    },
+    "semanticContext": {
+      "$ref": "#/definitions/SemanticContext"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Capability"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "APIStructure": {
+      "type": "object",
+      "description": "Defines the API interface for the component",
+      "required": ["endpoints", "protocol"],
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": ["jsonrpc", "rest", "graphql", "grpc"],
+          "description": "Communication protocol"
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Endpoint"
+          }
+        },
+        "authentication": {
+          "$ref": "#/definitions/Authentication"
+        }
+      }
+    },
+    "Endpoint": {
+      "type": "object",
+      "required": ["name", "method"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Parameter"
+          }
+        },
+        "returns": {
+          "$ref": "#/definitions/ReturnType"
+        },
+        "semanticTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Parameter": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false
+        },
+        "description": {
+          "type": "string"
+        },
+        "semanticRole": {
+          "type": "string",
+          "description": "Semantic role of this parameter (e.g., 'query', 'context', 'filter')"
+        }
+      }
+    },
+    "ReturnType": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "object"
+        },
+        "semanticType": {
+          "type": "string"
+        }
+      }
+    },
+    "Authentication": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["none", "apiKey", "bearer", "oauth2", "basic"]
+        },
+        "configuration": {
+          "type": "object"
+        }
+      }
+    },
+    "DatasetInference": {
+      "type": "object",
+      "description": "Rules for semantic dataset selection",
+      "properties": {
+        "inferenceType": {
+          "type": "string",
+          "enum": ["semantic-matching", "keyword-based", "intent-based", "hybrid"]
+        },
+        "datasets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Dataset"
+          }
+        },
+        "inferenceRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InferenceRule"
+          }
+        }
+      }
+    },
+    "Dataset": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["structured", "unstructured", "semi-structured", "vector"]
+        },
+        "schema": {
+          "type": "object"
+        },
+        "semanticTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contentDomain": {
+          "type": "string",
+          "description": "Domain of content (e.g., 'finance', 'healthcare', 'general')"
+        },
+        "accessMethod": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "InferenceRule": {
+      "type": "object",
+      "required": ["condition", "action"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/definitions/Condition"
+        },
+        "action": {
+          "$ref": "#/definitions/Action"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "confidenceThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        }
+      }
+    },
+    "Condition": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["intent-match", "keyword-match", "semantic-similarity", "pattern-match", "composite"]
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "expression": {
+          "type": "string",
+          "description": "Logical expression for condition evaluation"
+        }
+      }
+    },
+    "Action": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["select-dataset", "invoke-tool", "transform", "route", "composite"]
+        },
+        "target": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "ToolCalling": {
+      "type": "object",
+      "description": "Mechanism for semantic tool invocation",
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tool"
+          }
+        },
+        "invocationStrategy": {
+          "type": "string",
+          "enum": ["direct", "semantic-routing", "pipeline", "parallel"]
+        },
+        "toolSelectionRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InferenceRule"
+          }
+        }
+      }
+    },
+    "Tool": {
+      "type": "object",
+      "required": ["id", "name", "function"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "function": {
+          "type": "string",
+          "description": "Function signature or reference"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Parameter"
+          }
+        },
+        "semanticPurpose": {
+          "type": "string",
+          "description": "High-level purpose of the tool"
+        },
+        "requiredContext": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SemanticContext": {
+      "type": "object",
+      "description": "Semantic metadata for inference",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Problem domain (e.g., 'nlp', 'database', 'computation')"
+        },
+        "intents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of intents this component can handle"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "concepts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Relevant concepts in ontology"
+        },
+        "embedding": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "vector": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Capability": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["query", "transform", "generate", "analyze", "store", "retrieve"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "semanticSignature": {
+          "type": "string",
+          "description": "Semantic signature of the capability"
+        }
+      }
+    }
+  }
+}
